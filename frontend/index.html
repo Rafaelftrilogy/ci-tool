@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CI Register | Trilogy Care</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#2C4C79;--navy-dark:#162C4C;--teal:#43C0BE;--teal-dark:#007F7E;
+  --blue:#64BCEA;--red:#E04B51;--orange:#E0763C;--amber:#FEBD33;
+  --green:#10B981;--purple:#7C3AED;
+  --gray-50:#F8FAFC;--gray-100:#F1F5F9;--gray-200:#E2E8F0;--gray-300:#CBD5E1;
+  --gray-400:#94A3B8;--gray-500:#64748B;--gray-600:#475569;--gray-700:#334155;
+  --gray-800:#1E293B;--gray-900:#0F172A;
+  --radius:8px;--radius-lg:12px;--radius-xl:16px;
+  --shadow:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.06);
+  --shadow-md:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -2px rgba(0,0,0,.1);
+  --shadow-lg:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -4px rgba(0,0,0,.1);
+  --transition:150ms ease;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;background:var(--gray-50);color:var(--gray-800);line-height:1.6}
+
+/* LAYOUT */
+.app{display:grid;grid-template-columns:220px 1fr;grid-template-rows:56px 1fr;min-height:100vh}
+@media(max-width:768px){.app{grid-template-columns:1fr}.sidebar{display:none}}
+
+/* HEADER */
+.header{grid-column:1/-1;background:var(--navy-dark);color:#fff;display:flex;align-items:center;padding:0 20px;gap:14px;position:sticky;top:0;z-index:100}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-icon{width:30px;height:30px;background:linear-gradient(135deg,var(--teal),var(--blue));border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.75rem;color:var(--navy-dark)}
+.brand h1{font-size:.9rem;font-weight:600;letter-spacing:-.2px}
+.brand span{font-size:.7rem;color:var(--gray-400);display:block}
+.header-actions{margin-left:auto;display:flex;align-items:center;gap:12px}
+.sync-badge{font-size:.7rem;color:var(--teal);background:rgba(67,192,190,.12);padding:3px 10px;border-radius:12px;cursor:pointer}
+.sync-badge:hover{background:rgba(67,192,190,.25)}
+.help-btn{width:28px;height:28px;border-radius:50%;border:1px solid var(--gray-600);display:flex;align-items:center;justify-content:center;color:var(--gray-400);font-size:.75rem;font-weight:700;cursor:pointer;transition:all var(--transition)}
+.help-btn:hover{background:var(--teal);color:#fff;border-color:var(--teal)}
+
+/* SIDEBAR */
+.sidebar{background:#fff;border-right:1px solid var(--gray-200);padding:16px 0;overflow-y:auto}
+.nav-group{margin-bottom:20px}
+.nav-group-label{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gray-400);padding:0 16px;margin-bottom:6px}
+.nav-item{display:flex;align-items:center;gap:8px;padding:9px 16px;cursor:pointer;font-size:.82rem;color:var(--gray-600);border-left:3px solid transparent;transition:all var(--transition)}
+.nav-item:hover{background:var(--gray-50);color:var(--navy)}
+.nav-item.active{background:rgba(67,192,190,.06);color:var(--teal-dark);border-left-color:var(--teal);font-weight:600}
+.nav-badge{margin-left:auto;background:var(--gray-100);color:var(--gray-500);font-size:.68rem;padding:2px 6px;border-radius:8px;font-weight:600}
+.nav-badge.live{background:rgba(16,185,129,.12);color:var(--green)}
+.nav-badge.warn{background:rgba(254,189,51,.12);color:#92400E}
+
+/* MAIN */
+.main{padding:28px;overflow-y:auto}
+.page-head{margin-bottom:24px;display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.page-head h2{font-size:1.3rem;font-weight:700;color:var(--navy-dark);letter-spacing:-.4px}
+.page-head p{font-size:.8rem;color:var(--gray-500)}
+.page-head .actions{margin-left:auto;display:flex;gap:8px}
+
+/* BUTTONS */
+.btn{border:none;border-radius:var(--radius);padding:8px 14px;font-size:.8rem;font-weight:600;cursor:pointer;transition:all var(--transition);display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:var(--teal);color:#fff}.btn-primary:hover{background:var(--teal-dark)}
+.btn-outline{background:#fff;border:1px solid var(--gray-200);color:var(--gray-600)}.btn-outline:hover{border-color:var(--gray-400)}
+.btn-sm{padding:5px 10px;font-size:.74rem}
+.btn-danger{background:var(--red);color:#fff}
+
+/* KPI CARDS */
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:24px}
+.kpi{background:#fff;border-radius:var(--radius-lg);padding:18px;border:1px solid var(--gray-200);position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.kpi.teal::before{background:var(--teal)}
+.kpi.green::before{background:var(--green)}
+.kpi.blue::before{background:var(--blue)}
+.kpi.amber::before{background:var(--amber)}
+.kpi.red::before{background:var(--red)}
+.kpi .num{font-size:1.6rem;font-weight:700;color:var(--navy-dark);line-height:1}
+.kpi .label{font-size:.7rem;font-weight:600;color:var(--gray-500);text-transform:uppercase;letter-spacing:.4px;margin-top:6px}
+
+/* TABLE */
+.card{background:#fff;border-radius:var(--radius-lg);border:1px solid var(--gray-200);overflow:hidden}
+.card-header{padding:14px 18px;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.search-box{border:1px solid var(--gray-200);border-radius:var(--radius);padding:7px 12px;font-size:.8rem;width:220px;transition:border var(--transition)}
+.search-box:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(67,192,190,.1)}
+.filter-pill{border:1px solid var(--gray-200);background:#fff;border-radius:20px;padding:4px 12px;font-size:.72rem;cursor:pointer;color:var(--gray-500);transition:all var(--transition)}
+.filter-pill:hover{border-color:var(--teal)}
+.filter-pill.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+
+table{width:100%;border-collapse:collapse}
+thead th{text-align:left;padding:10px 14px;font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-400);background:var(--gray-50);border-bottom:1px solid var(--gray-200)}
+tbody td{padding:12px 14px;border-bottom:1px solid var(--gray-100);font-size:.82rem;vertical-align:top}
+tbody tr{cursor:pointer;transition:background var(--transition)}
+tbody tr:hover td{background:rgba(67,192,190,.03)}
+
+/* PILLS */
+.pill{display:inline-block;padding:2px 9px;border-radius:12px;font-size:.7rem;font-weight:600;white-space:nowrap}
+.pill-progress{background:#DBEAFE;color:#1E40AF}
+.pill-implemented{background:#D1FAE5;color:#065F46}
+.pill-identified{background:#FEF3C7;color:#92400E}
+.pill-pending{background:#F3E8FF;color:#6B21A8}
+.pill-closed{background:var(--gray-100);color:var(--gray-500)}
+.std-tag{display:inline-block;padding:1px 6px;border-radius:3px;font-size:.68rem;font-weight:600;background:rgba(44,76,121,.07);color:var(--navy);margin:1px}
+.source-tag{font-size:.72rem;color:var(--gray-500);font-style:italic}
+
+/* TOOLTIP */
+[data-tip]{position:relative;cursor:help}
+[data-tip]::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:var(--gray-900);color:#fff;padding:5px 10px;border-radius:6px;font-size:.72rem;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .2s;z-index:50;font-weight:400}
+[data-tip]:hover::after{opacity:1}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(2px)}
+.modal-bg.show{display:flex}
+.modal{background:#fff;border-radius:var(--radius-xl);width:92%;max-width:600px;max-height:85vh;overflow-y:auto;padding:28px}
+.modal h3{font-size:1.1rem;font-weight:700;color:var(--navy-dark);margin-bottom:18px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:.75rem;font-weight:600;color:var(--gray-600);margin-bottom:3px}
+.field .req{color:var(--red)}
+.field input,.field select,.field textarea{width:100%;border:1px solid var(--gray-200);border-radius:var(--radius);padding:9px 11px;font-size:.84rem;transition:border var(--transition)}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(67,192,190,.1)}
+.field textarea{resize:vertical;min-height:70px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.modal-foot{display:flex;gap:8px;justify-content:flex-end;margin-top:20px;padding-top:14px;border-top:1px solid var(--gray-100)}
+
+/* HELP PANEL */
+.help-panel{position:fixed;top:56px;right:0;width:340px;height:calc(100vh - 56px);background:#fff;border-left:1px solid var(--gray-200);z-index:150;padding:24px;overflow-y:auto;transform:translateX(100%);transition:transform .25s ease;box-shadow:var(--shadow-lg)}
+.help-panel.open{transform:translateX(0)}
+.help-panel h3{font-size:1rem;font-weight:700;color:var(--navy-dark);margin-bottom:12px}
+.help-panel p{font-size:.82rem;color:var(--gray-600);margin-bottom:12px;line-height:1.6}
+.help-panel .help-section{margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--gray-100)}
+.help-panel .help-section h4{font-size:.82rem;font-weight:600;color:var(--navy);margin-bottom:4px}
+.help-close{position:absolute;top:16px;right:16px;cursor:pointer;font-size:1.2rem;color:var(--gray-400)}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="header">
+    <div class="brand">
+      <div class="brand-icon">CI</div>
+      <div><h1>Continuous Improvement</h1><span>Trilogy Care — Strengthened Standards</span></div>
+    </div>
+    <div class="header-actions">
+      <div class="sync-badge" onclick="refreshData()" data-tip="Click to check for updates from Linear, Confluence, CRM">⟳ Last sync: Today</div>
+      <div class="help-btn" onclick="toggleHelp()">?</div>
+    </div>
+  </header>
+
+  <nav class="sidebar">
+    <div class="nav-group">
+      <div class="nav-group-label">Overview</div>
+      <div class="nav-item active" data-v="dash">📊 Dashboard</div>
+      <div class="nav-item" data-v="register">📋 Register <span class="nav-badge live" id="regCount">11</span></div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label">Actions</div>
+      <div class="nav-item" data-v="pending">⏳ Evaluation Gate <span class="nav-badge warn" id="pendCount">0</span></div>
+      <div class="nav-item" data-v="standards">🎯 Standards Map</div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label">System</div>
+      <div class="nav-item" data-v="log">📝 Audit Trail</div>
+      <div class="nav-item" data-v="sources">🔗 Data Sources</div>
+    </div>
+  </nav>
+
+  <main class="main" id="main"></main>
+</div>
+
+<!-- HELP PANEL -->
+<div class="help-panel" id="helpPanel">
+  <div class="help-close" onclick="toggleHelp()">✕</div>
+  <h3>How CI Works</h3>
+  <div class="help-section">
+    <h4>What is this tool?</h4>
+    <p>The single source of truth for Trilogy Care's Continuous Improvement register. Every improvement — whether identified internally, from a complaint, from the Commission, or through an audit — lives here with a unique reference ID.</p>
+  </div>
+  <div class="help-section">
+    <h4>Reference IDs</h4>
+    <p>Every item gets a permanent ID: <strong>TC-CI-YYYY-NNNN</strong> (e.g. TC-CI-2026-0001). This traces back to the source system where it was identified.</p>
+  </div>
+  <div class="help-section">
+    <h4>Evaluation Gate</h4>
+    <p>New submissions go to "Pending Review". A Manager or Admin reviews and either approves it as new, links it to an existing CI item (avoiding duplicates), or rejects it with a reason.</p>
+  </div>
+  <div class="help-section">
+    <h4>Standards</h4>
+    <p>Every CI item must be linked to at least one Strengthened Aged Care Quality Standard (1–5). Items without a standard mapping are flagged for review.</p>
+  </div>
+  <div class="help-section">
+    <h4>Data Sources</h4>
+    <p>The tool pulls from: Zoho CRM, Linear, Confluence, M365 Email (Commission), Complaints, and manual entries. Click "⟳ Refresh" to check for updates.</p>
+  </div>
+  <div class="help-section">
+    <h4>Statuses</h4>
+    <p><strong>Pending Review</strong> → Evaluation Gate<br><strong>Identified</strong> → Approved, awaiting action<br><strong>In Progress</strong> → Work underway<br><strong>Implemented</strong> → Done, needs evidence<br><strong>Verified</strong> → Evidence confirmed<br><strong>Closed</strong> → Complete with full trail</p>
+  </div>
+</div>
+
+<!-- NEW ENTRY MODAL -->
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <h3>Submit CI Entry</h3>
+    <form id="entryForm" onsubmit="submitEntry(event)">
+      <div class="field"><label>Title <span class="req">*</span></label><input id="f_title" required placeholder="Short headline"></div>
+      <div class="field"><label>Description <span class="req">*</span></label><textarea id="f_desc" required placeholder="What was identified? What needs to improve?"></textarea></div>
+      <div class="field-row">
+        <div class="field"><label>Source <span class="req">*</span></label>
+          <select id="f_source" required><option value="">—</option><option>Self-Identified</option><option>GAP Assessment</option><option>CQCC</option><option>Consumer Feedback</option><option>SIRS</option><option>Commission Complaint</option><option>Commission Directive</option></select>
+        </div>
+        <div class="field"><label>Department <span class="req">*</span></label>
+          <select id="f_dept" required><option value="">—</option><option>Operations</option><option>Clinical</option><option>Quality</option><option>Compliance</option><option>Digital</option><option>Finance</option><option>HR</option><option>Marketing</option><option>Care</option></select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Owner <span class="req">*</span></label><input id="f_owner" required placeholder="Person accountable"></div>
+        <div class="field"><label>Date Identified <span class="req">*</span></label><input type="date" id="f_date" required></div>
+      </div>
+      <div class="field"><label>Standard(s)</label>
+        <select id="f_std" multiple size="4">
+          <option value="1.1">1.1 Person-centred care</option><option value="1.2">1.2 Ongoing assessment</option><option value="1.3">1.3 Care planning</option><option value="1.4">1.4 Delivering services</option>
+          <option value="2.1">2.1 Governance</option><option value="2.3">2.3 Quality system</option><option value="2.4">2.4 Continuous improvement</option><option value="2.5">2.5 Risk management</option><option value="2.6">2.6 Feedback & complaints</option><option value="2.7">2.7 Information management</option><option value="2.8">2.8 Workforce capability</option><option value="2.9">2.9 Workforce conduct</option>
+          <option value="3.1">3.1 Assessment & planning</option><option value="3.2">3.2 Delivering care</option><option value="3.3">3.3 Service environment</option><option value="3.4">3.4 Transitions</option>
+          <option value="4.1">4.1 Safe environment</option>
+          <option value="5.1">5.1 Clinical governance</option><option value="5.4">5.4 Clinical care</option><option value="5.5">5.5 Incident management</option>
+        </select>
+      </div>
+      <div class="field"><label>Evidence / Links</label><input id="f_evidence" placeholder="Linear URL, Confluence page, document..."></div>
+      <div class="field"><label>Source Reference</label><input id="f_ref" placeholder="Complaint ID, email ref, CRM record..."></div>
+      <div class="modal-foot"><button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button><button type="submit" class="btn btn-primary">Submit for Review</button></div>
+    </form>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DATA — CRM ITEMS (from Fran's export, Jan 2025+)
+// ============================================================
+const CI_DATA = [
+  {id:"TC-CI-2026-0001",title:"Client Agreement Review and Supporting Documents",desc:"Client complaints raised questions regarding Client Agreement clauses. Aim: improve clarity, accessibility, and practical understanding for clients.",standards:[],source:"Consumer Feedback",status:"In Progress",owner:"Fran Da Silva",dept:"Operations",dateId:"2026-01-12",sourceSystem:"zoho_crm",sourceId:"zcrm_4637899001415010975",resolution:"Practical alternative solution provided. Improved tools for future clients (companion guide, FAQ updates). Strengthened governance."},
+  {id:"TC-CI-2026-0002",title:"Cab Charge Optimisation & Risk Mitigation Initiative",desc:"Changes to Cab Charge card processes introduced risks relating to card activation, usability at first use, and renewal requirements.",standards:[],source:"Self-Identified",status:"In Progress",owner:"Celeste Donnachie",dept:"Operations",dateId:"2026-03-01",sourceSystem:"zoho_crm",sourceId:"zcrm_4637899001414960909",resolution:""},
+  {id:"TC-CI-2026-0003",title:"Transport Service Continuity Enhancement (Alternative Provider)",desc:"Reliance on largest transport provider created risk of service disruption. Alternative options not consistently structured.",standards:[],source:"Self-Identified",status:"In Progress",owner:"Zoe Judd",dept:"Compliance",dateId:"2026-03-01",sourceSystem:"zoho_crm",sourceId:"zcrm_4637899001414960420",resolution:"Created process for alternative provider and associated registration."},
+  {id:"TC-CI-2026-0004",title:"Enhanced Overspend Resolution, Mitigation and Procedure",desc:"Need to implement a cohesive policy and procedure workflow for overspending under Support at Home. Current methods do not allow prompt response.",standards:[],source:"Self-Identified",status:"Implemented",owner:"Fran Da Silva",dept:"Care",dateId:"2026-03-26",sourceSystem:"zoho_crm",sourceId:"zcrm_4637899001396694218",resolution:"Prevention & Mitigation systems. Determining Cause framework. Resolution & Write-Offs escalation. Care Continuity options. Governance & CI loops."},
+  {id:"TC-CI-2025-0005",title:"Communications (Quality Assurance Process)",desc:"Feedback highlighted opportunities to strengthen communication practices — tone, clarity, timeliness of responses, contact during investigations.",standards:[],source:"Consumer Feedback",status:"In Progress",owner:"Meagan Ritchie",dept:"Compliance",dateId:"2025-10-24",sourceSystem:"zoho_crm",sourceId:"zcrm_4637899001178003734",resolution:"Revised incident management process. Standardised templates. Regular review of communication practices."},
+  {id:"TC-CI-2025-0006",title:"Complaints Framework",desc:"Need for more structured, step-based approach to ensure consistent communication, stakeholder engagement, and governance throughout complaint lifecycle.",standards:[],source:"GAP Assessment",status:"In Progress",owner:"Fran Da Silva",dept:"Operations",dateId:"2025-10-14",sourceSystem:"zoho_crm",sourceId:"zcrm_4637899001165996923",resolution:""},
+  {id:"TC-CI-2025-0007",title:"Behavioural and Communication Plans",desc:"Need to strengthen individualised strategies for clients with cognitive impairment and/or behavioural challenges.",standards:[],source:"Self-Identified",status:"In Progress",owner:"Maryanne Humphries",dept:"Clinical",dateId:"2025-05-20",sourceSystem:"zoho_crm",sourceId:"zcrm_4637899001049891659",resolution:"Introducing Behavioural and Communication Support Plans. Staff training on communication barriers."},
+  {id:"TC-CI-2025-0008",title:"Marketing Communication (Support at Home Program)",desc:"Feedback on communication to be sent to clients regarding upcoming changes with Support at Home Program.",standards:[],source:"Self-Identified",status:"In Progress",owner:"Kerry Broodryk",dept:"Marketing",dateId:"2025-06-09",sourceSystem:"zoho_crm",sourceId:"zcrm_4637899001029108277",resolution:""},
+  {id:"TC-CI-2025-0009",title:"Provider Form for Terminating Services — Website Notifications",desc:"Invoices from providers on automation had not been stopped. Provider notified Coordinator but Trilogy notified 2 months later causing incorrect payments.",standards:[],source:"Self-Identified",status:"In Progress",owner:"Becc Holliday",dept:"Compliance",dateId:"2025-02-25",sourceSystem:"zoho_crm",sourceId:"zcrm_4637899000910144303",resolution:""},
+  {id:"TC-CI-2025-0010",title:"Personal Accident Insurance Requirement Removal",desc:"PA Insurance does not protect care recipients. Waiver creates unnecessary barrier. No Aged Care Standard requiring it.",standards:[],source:"Self-Identified",status:"In Progress",owner:"Sarah Minton",dept:"Compliance",dateId:"2025-01-14",sourceSystem:"zoho_crm",sourceId:"zcrm_4637899000873026788",resolution:"Removed mandatory requirement. Eliminated waiver. Updated onboarding and policy documents."},
+  {id:"TC-CI-2025-0011",title:"Management of Care Recipient Treatment Refusals",desc:"Develop a policy addressing cases where a care recipient requires treatment but refuses care. Identified as part of HRVC meetings.",standards:[],source:"Self-Identified",status:"In Progress",owner:"Patrick Hawker",dept:"Clinical",dateId:"2025-01-15",sourceSystem:"zoho_crm",sourceId:"zcrm_4637899000859949416",resolution:""},
+];
+
+// --- PERSISTENCE ---
+const STORE_KEY = 'tc.ci.v2';
+const LOG_KEY = 'tc.ci.log.v2';
+function load() { try { return JSON.parse(localStorage.getItem(STORE_KEY)) || null; } catch(e) { return null; } }
+function save(items) { localStorage.setItem(STORE_KEY, JSON.stringify(items)); }
+function loadLog() { try { return JSON.parse(localStorage.getItem(LOG_KEY)) || []; } catch(e) { return []; } }
+function saveLog(log) { localStorage.setItem(LOG_KEY, JSON.stringify(log)); }
+function logAction(action, detail) { const l = loadLog(); l.unshift({ts:new Date().toISOString(),user:'Rafael',action,detail}); if(l.length>300)l.length=300; saveLog(l); }
+
+function init() {
+  if (!load()) { save(CI_DATA); logAction('import','Loaded 11 CRM items from Fran export'); }
+  render();
+}
+
+function items() { return load() || []; }
+function updateNav() {
+  const all = items();
+  document.getElementById('regCount').textContent = all.length;
+  document.getElementById('pendCount').textContent = all.filter(i=>i.status==='Pending Review').length;
+}
+
+// --- VIEWS ---
+let view = 'dash';
+function nav(v) { view = v; render(); document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.v===v)); }
+
+function render() {
+  const m = document.getElementById('main');
+  updateNav();
+  if (view==='dash') m.innerHTML = vDash();
+  else if (view==='register') m.innerHTML = vRegister();
+  else if (view==='pending') m.innerHTML = vPending();
+  else if (view==='standards') m.innerHTML = vStandards();
+  else if (view==='log') m.innerHTML = vLog();
+  else if (view==='sources') m.innerHTML = vSources();
+}
+
+function vDash() {
+  const all = items();
+  const implemented = all.filter(i=>i.status==='Implemented').length;
+  const inProg = all.filter(i=>i.status==='In Progress').length;
+  const noStd = all.filter(i=>!i.standards||i.standards.length===0).length;
+  const pending = all.filter(i=>i.status==='Pending Review').length;
+
+  return `<div class="page-head"><div><h2>Dashboard</h2><p>CI Register overview — ACQSC Registration Renewal 28 June 2026</p></div></div>
+  <div class="kpi-row">
+    <div class="kpi teal"><div class="num">${all.length}</div><div class="label">Total Items</div></div>
+    <div class="kpi green"><div class="num">${implemented}</div><div class="label">Implemented</div></div>
+    <div class="kpi blue"><div class="num">${inProg}</div><div class="label">In Progress</div></div>
+    <div class="kpi red"><div class="num">${noStd}</div><div class="label">No Standard Mapped</div></div>
+    <div class="kpi amber"><div class="num">${pending}</div><div class="label">Pending Review</div></div>
+  </div>
+  <div class="card">
+    <div class="card-header"><strong>Recent Activity</strong></div>
+    ${loadLog().slice(0,8).map(l=>`<div style="padding:10px 18px;border-bottom:1px solid var(--gray-100);font-size:.8rem;display:flex;gap:10px"><span style="color:var(--gray-400);font-size:.72rem;min-width:100px">${new Date(l.ts).toLocaleDateString('en-AU',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</span><span>${l.action}: ${l.detail}</span></div>`).join('')||'<div style="padding:20px;color:var(--gray-400);font-size:.84rem">No activity yet</div>'}
+  </div>`;
+}
+
+function vRegister() {
+  const all = items();
+  return `<div class="page-head"><div><h2>CI Register</h2><p>All items — 1 Jan 2025 to present. Each has a unique TC-CI reference ID.</p></div><div class="actions"><button class="btn btn-primary" onclick="openModal()">+ New Entry</button></div></div>
+  <div class="card">
+    <div class="card-header">
+      <input class="search-box" placeholder="Search by title, owner, ref..." oninput="filterTable(this.value)">
+      <div class="filter-pill active" onclick="setF('')">All (${all.length})</div>
+      <div class="filter-pill" onclick="setF('In Progress')">In Progress</div>
+      <div class="filter-pill" onclick="setF('Implemented')">Implemented</div>
+      <div class="filter-pill" onclick="setF('Pending Review')">Pending</div>
+    </div>
+    <table><thead><tr><th>Ref</th><th>Title</th><th>Status</th><th>Owner</th><th>Dept</th><th>Source</th><th>Standard</th></tr></thead>
+    <tbody id="regTbody">${all.map(rowHtml).join('')}</tbody></table>
+  </div>`;
+}
+
+function rowHtml(i) {
+  const cls = i.status==='Implemented'?'pill-implemented':i.status==='In Progress'?'pill-progress':i.status==='Pending Review'?'pill-pending':'pill-identified';
+  const stds = (i.standards||[]).map(s=>`<span class="std-tag">${s}</span>`).join(' ') || '<span style="color:var(--red);font-size:.7rem">⚠ unmapped</span>';
+  return `<tr><td><strong style="color:var(--navy);font-size:.78rem">${i.id}</strong></td><td>${i.title}</td><td><span class="pill ${cls}">${i.status}</span></td><td>${i.owner}</td><td>${i.dept}</td><td class="source-tag">${i.source}</td><td>${stds}</td></tr>`;
+}
+
+function vPending() {
+  const p = items().filter(i=>i.status==='Pending Review');
+  if(!p.length) return `<div class="page-head"><div><h2>Evaluation Gate</h2><p>Items awaiting gatekeeper review</p></div></div><div style="text-align:center;padding:60px;color:var(--gray-400)"><div style="font-size:2rem;margin-bottom:8px">✅</div>No items pending</div>`;
+  return `<div class="page-head"><div><h2>Evaluation Gate</h2><p>Review, approve, link to existing CI, or reject</p></div></div>
+  <div class="card"><table><thead><tr><th>Ref</th><th>Title</th><th>Submitted</th><th>Actions</th></tr></thead><tbody>
+  ${p.map(i=>`<tr><td><strong>${i.id}</strong></td><td>${i.title}<br><span style="font-size:.75rem;color:var(--gray-500)">${i.desc.substring(0,100)}...</span></td><td>${i.owner}</td><td><button class="btn btn-sm btn-primary" onclick="approve('${i.id}')">Approve</button> <button class="btn btn-sm btn-outline" onclick="linkTo('${i.id}')">Link</button> <button class="btn btn-sm btn-danger" onclick="reject('${i.id}')">Reject</button></td></tr>`).join('')}
+  </tbody></table></div>`;
+}
+
+function vStandards() {
+  const all = items();
+  const names = {'1':'The Individual','2':'The Organisation','3':'Care & Services','4':'The Environment','5':'Clinical Care'};
+  let html = `<div class="page-head"><div><h2>Standards Map</h2><p>CI items by Strengthened Aged Care Quality Standard</p></div></div>`;
+  const unmapped = all.filter(i=>!i.standards||i.standards.length===0);
+  if(unmapped.length) {
+    html += `<div class="card" style="margin-bottom:16px;border-left:3px solid var(--red)"><div style="padding:14px 18px;font-weight:600;color:var(--red)">⚠ ${unmapped.length} items NOT mapped to any standard</div><table><tbody>${unmapped.map(i=>`<tr><td><strong>${i.id}</strong></td><td>${i.title}</td><td>${i.owner}</td></tr>`).join('')}</tbody></table></div>`;
+  }
+  for(let s=1;s<=5;s++){
+    const si = all.filter(i=>(i.standards||[]).some(st=>st.startsWith(s+'.')));
+    html+=`<div class="card" style="margin-bottom:12px"><div style="padding:14px 18px;font-weight:600;color:var(--navy);border-bottom:1px solid var(--gray-100)">Standard ${s}: ${names[s]} <span style="font-weight:400;color:var(--gray-400)">(${si.length})</span></div>`;
+    if(si.length) html+=`<table><tbody>${si.map(i=>`<tr><td style="width:120px"><strong>${i.id}</strong></td><td>${i.title}</td><td style="width:100px"><span class="pill ${i.status==='Implemented'?'pill-implemented':'pill-progress'}">${i.status}</span></td></tr>`).join('')}</tbody></table>`;
+    else html+=`<div style="padding:16px 18px;color:var(--gray-400);font-size:.82rem">No items mapped</div>`;
+    html+=`</div>`;
+  }
+  return html;
+}
+
+function vLog() {
+  const log = loadLog();
+  return `<div class="page-head"><div><h2>Audit Trail</h2><p>Every action logged with timestamp and user</p></div></div>
+  <div class="card">${log.slice(0,50).map(l=>`<div style="padding:10px 18px;border-bottom:1px solid var(--gray-100);font-size:.82rem;display:flex;gap:12px"><span style="color:var(--gray-400);font-size:.72rem;min-width:120px">${new Date(l.ts).toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})}</span><span><strong>${l.user}</strong> — ${l.action}: ${l.detail}</span></div>`).join('')||'<div style="padding:20px;color:var(--gray-400)">No activity logged</div>'}</div>`;
+}
+
+function vSources() {
+  const sources = [
+    {name:'Zoho CRM',id:'zoho_crm',status:'Imported',items:11,last:'2 Jun 2026',note:'Manual CSV import from Fran'},
+    {name:'Linear',id:'linear',status:'Not connected',items:0,last:'—',note:'Requires MCP: search_linear_issues'},
+    {name:'Confluence',id:'confluence',status:'Not connected',items:0,last:'—',note:'Requires MCP: search_confluence'},
+    {name:'M365 Email',id:'email',status:'Not connected',items:0,last:'—',note:'Commission correspondence'},
+    {name:'Complaints',id:'complaints',status:'Not connected',items:0,last:'—',note:'Complaint-derived CI items'},
+    {name:'Manual Entry',id:'manual',status:'Active',items:0,last:'—',note:'Staff submissions via form'},
+  ];
+  return `<div class="page-head"><div><h2>Data Sources</h2><p>Connected systems and refresh status. Each item traces back to its source.</p></div></div>
+  <div class="card"><table><thead><tr><th>Source</th><th>Status</th><th>Items</th><th>Last Refresh</th><th>Notes</th></tr></thead><tbody>
+  ${sources.map(s=>`<tr><td><strong>${s.name}</strong></td><td><span class="pill ${s.status==='Imported'||s.status==='Active'?'pill-implemented':'pill-closed'}">${s.status}</span></td><td>${s.items}</td><td>${s.last}</td><td style="font-size:.78rem;color:var(--gray-500)">${s.note}</td></tr>`).join('')}
+  </tbody></table></div>`;
+}
+
+// --- ACTIONS ---
+function openModal(){document.getElementById('modal').classList.add('show');document.getElementById('f_date').value=new Date().toISOString().split('T')[0];}
+function closeModal(){document.getElementById('modal').classList.remove('show');document.getElementById('entryForm').reset();}
+function toggleHelp(){document.getElementById('helpPanel').classList.toggle('open');}
+
+function submitEntry(e){
+  e.preventDefault();
+  const all=items();
+  const year=new Date().getFullYear();
+  const seq=all.filter(i=>i.id.includes(year)).length+1;
+  const newItem={
+    id:`TC-CI-${year}-${String(all.length+1).padStart(4,'0')}`,
+    title:document.getElementById('f_title').value,
+    desc:document.getElementById('f_desc').value,
+    standards:Array.from(document.getElementById('f_std').selectedOptions).map(o=>o.value),
+    source:document.getElementById('f_source').value,
+    status:'Pending Review',
+    owner:document.getElementById('f_owner').value,
+    dept:document.getElementById('f_dept').value,
+    dateId:document.getElementById('f_date').value,
+    sourceSystem:'manual',
+    sourceId:'',
+    resolution:'',
+    evidence:document.getElementById('f_evidence').value,
+    sourceRef:document.getElementById('f_ref').value,
+  };
+  all.push(newItem);
+  save(all);
+  logAction('created',`${newItem.id}: "${newItem.title}"`);
+  closeModal();
+  nav('register');
+}
+
+function approve(id){const all=items();const i=all.find(x=>x.id===id);if(i){i.status='Identified';save(all);logAction('approved',`${id} approved into register`);render();}}
+function reject(id){const reason=prompt('Reason for rejection:');if(reason===null)return;const all=items();const i=all.find(x=>x.id===id);if(i){i.status='Closed';save(all);logAction('rejected',`${id} rejected: ${reason}`);render();}}
+function linkTo(id){const target=prompt('Enter existing CI ref to link to (e.g. TC-CI-2026-0001):');if(!target)return;const all=items();const i=all.find(x=>x.id===id);if(i){i.status='Closed';i.linkedTo=target;save(all);logAction('linked',`${id} linked to ${target}`);render();}}
+
+function refreshData(){logAction('refresh','Manual refresh triggered');alert('Refresh queued — will pull from Linear, Confluence, and email sources.');}
+function setF(status){/* TODO: filter implementation */}
+function filterTable(q){/* TODO: search implementation */}
+
+// --- INIT ---
+document.querySelectorAll('.nav-item').forEach(n=>n.addEventListener('click',()=>nav(n.dataset.v)));
+document.getElementById('modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
+init();
+</script>
+</body>
+</html>
