@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Continuous Improvement | Trilogy Care</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#2C4C79;--navy-dark:#162C4C;--teal:#43C0BE;--teal-dark:#007F7E;
+  --blue:#64BCEA;--red:#E04B51;--orange:#E0763C;--amber:#FEBD33;
+  --gray-50:#F8FAFC;--gray-100:#F1F5F9;--gray-200:#E2E8F0;--gray-300:#CBD5E1;
+  --gray-400:#94A3B8;--gray-500:#64748B;--gray-600:#475569;--gray-700:#334155;
+  --gray-800:#1E293B;--gray-900:#0F172A;
+  --radius:8px;--radius-lg:12px;--radius-xl:16px;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.05);
+  --shadow:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.06);
+  --shadow-md:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -2px rgba(0,0,0,.1);
+  --shadow-lg:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -4px rgba(0,0,0,.1);
+  --transition:150ms ease;
+}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;
+  background:var(--gray-50);color:var(--gray-800);line-height:1.5;
+  min-height:100vh;
+}
+
+/* === LAYOUT === */
+.app{display:grid;grid-template-columns:260px 1fr;grid-template-rows:60px 1fr;min-height:100vh}
+.header{grid-column:1/-1;background:var(--navy-dark);color:#fff;display:flex;align-items:center;padding:0 24px;gap:16px;position:sticky;top:0;z-index:100;box-shadow:var(--shadow-md)}
+.sidebar{background:#fff;border-right:1px solid var(--gray-200);padding:20px 0;overflow-y:auto}
+.main{padding:32px;overflow-y:auto;background:var(--gray-50)}
+
+/* === HEADER === */
+.brand{display:flex;align-items:center;gap:12px}
+.brand-mark{width:34px;height:34px;background:linear-gradient(135deg,var(--teal),var(--blue));border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.85rem;color:var(--navy-dark)}
+.brand-text{font-size:1rem;font-weight:600;letter-spacing:-.3px}
+.brand-sub{font-size:.75rem;color:var(--gray-400);font-weight:400}
+.header-right{margin-left:auto;display:flex;align-items:center;gap:16px}
+.header-sync{font-size:.75rem;color:var(--teal);background:rgba(67,192,190,.15);padding:4px 10px;border-radius:20px}
+.header-user{font-size:.8rem;color:var(--gray-300)}
+
+/* === SIDEBAR === */
+.nav-section{margin-bottom:24px}
+.nav-label{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--gray-400);padding:0 20px;margin-bottom:8px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 20px;cursor:pointer;transition:all var(--transition);font-size:.85rem;color:var(--gray-600);border-left:3px solid transparent}
+.nav-item:hover{background:var(--gray-50);color:var(--navy)}
+.nav-item.active{background:rgba(67,192,190,.08);color:var(--teal-dark);border-left-color:var(--teal);font-weight:600}
+.nav-item .icon{width:20px;text-align:center;font-size:1rem}
+.nav-item .badge{margin-left:auto;background:var(--teal);color:#fff;font-size:.7rem;padding:2px 7px;border-radius:10px;font-weight:600}
+.nav-item .badge.warn{background:var(--amber)}
+.nav-item .badge.danger{background:var(--red)}
+
+/* === MAIN CONTENT === */
+.page-header{margin-bottom:28px}
+.page-title{font-size:1.5rem;font-weight:700;color:var(--navy-dark);letter-spacing:-.5px}
+.page-desc{font-size:.85rem;color:var(--gray-500);margin-top:4px}
+
+/* === CARDS === */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:28px}
+.kpi-card{background:#fff;border-radius:var(--radius-lg);padding:20px;border:1px solid var(--gray-200);transition:all var(--transition)}
+.kpi-card:hover{box-shadow:var(--shadow-md);border-color:var(--gray-300)}
+.kpi-card .label{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-500);margin-bottom:8px}
+.kpi-card .value{font-size:1.8rem;font-weight:700;color:var(--navy-dark);line-height:1}
+.kpi-card .sub{font-size:.75rem;color:var(--gray-400);margin-top:6px}
+.kpi-card.accent{border-top:3px solid var(--teal)}
+.kpi-card.warn{border-top:3px solid var(--amber)}
+.kpi-card.danger{border-top:3px solid var(--red)}
+
+/* === TABLE === */
+.table-wrap{background:#fff;border-radius:var(--radius-lg);border:1px solid var(--gray-200);overflow:hidden}
+.table-toolbar{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--gray-100);flex-wrap:wrap}
+.search-input{border:1px solid var(--gray-200);border-radius:var(--radius);padding:8px 12px;font-size:.82rem;width:240px;transition:border var(--transition)}
+.search-input:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(67,192,190,.15)}
+.filter-btn{border:1px solid var(--gray-200);background:#fff;border-radius:var(--radius);padding:6px 12px;font-size:.78rem;cursor:pointer;color:var(--gray-600);transition:all var(--transition)}
+.filter-btn:hover{border-color:var(--gray-400)}
+.filter-btn.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.btn-primary{background:var(--teal);color:#fff;border:none;border-radius:var(--radius);padding:8px 16px;font-size:.82rem;font-weight:600;cursor:pointer;transition:all var(--transition);margin-left:auto}
+.btn-primary:hover{background:var(--teal-dark);box-shadow:var(--shadow)}
+
+table{width:100%;border-collapse:collapse}
+thead th{text-align:left;padding:12px 16px;font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-500);background:var(--gray-50);border-bottom:1px solid var(--gray-200)}
+tbody td{padding:14px 16px;border-bottom:1px solid var(--gray-100);font-size:.84rem;vertical-align:top}
+tbody tr:hover td{background:rgba(67,192,190,.03)}
+tbody tr:last-child td{border-bottom:none}
+
+.status-pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:600;white-space:nowrap}
+.status-pill.done{background:#D1FAE5;color:#065F46}
+.status-pill.progress{background:#DBEAFE;color:#1E40AF}
+.status-pill.identified{background:#FEF3C7;color:#92400E}
+.status-pill.verified{background:#E0E7FF;color:#3730A3}
+.status-pill.closed{background:var(--gray-100);color:var(--gray-500)}
+
+.std-chip{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.7rem;font-weight:600;background:rgba(44,76,121,.08);color:var(--navy);margin:1px 2px}
+
+/* === MODAL === */
+.modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(2px)}
+.modal-overlay.show{display:flex}
+.modal{background:#fff;border-radius:var(--radius-xl);width:90%;max-width:640px;max-height:85vh;overflow-y:auto;box-shadow:var(--shadow-lg);padding:32px}
+.modal h2{font-size:1.2rem;font-weight:700;color:var(--navy-dark);margin-bottom:20px}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:.78rem;font-weight:600;color:var(--gray-600);margin-bottom:4px}
+.form-group label .req{color:var(--red)}
+.form-group input,.form-group select,.form-group textarea{width:100%;border:1px solid var(--gray-200);border-radius:var(--radius);padding:10px 12px;font-size:.85rem;transition:border var(--transition)}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(67,192,190,.12)}
+.form-group textarea{resize:vertical;min-height:80px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:24px;padding-top:16px;border-top:1px solid var(--gray-100)}
+.btn-cancel{background:var(--gray-100);color:var(--gray-600);border:none;border-radius:var(--radius);padding:8px 16px;font-size:.82rem;cursor:pointer}
+
+/* === EMPTY STATE === */
+.empty{text-align:center;padding:60px 20px;color:var(--gray-400)}
+.empty .icon{font-size:2.5rem;margin-bottom:12px}
+.empty p{font-size:.9rem}
+
+/* === AUDIT LOG === */
+.log-entry{padding:12px 16px;border-bottom:1px solid var(--gray-100);font-size:.82rem;display:flex;gap:12px;align-items:flex-start}
+.log-entry:last-child{border-bottom:none}
+.log-dot{width:8px;height:8px;border-radius:50%;background:var(--teal);margin-top:6px;flex-shrink:0}
+.log-time{font-size:.72rem;color:var(--gray-400);white-space:nowrap}
+.log-text{flex:1;color:var(--gray-700)}
+
+/* === RESPONSIVE === */
+@media(max-width:768px){
+  .app{grid-template-columns:1fr;grid-template-rows:60px auto 1fr}
+  .sidebar{display:none}
+  .main{padding:20px}
+  .kpi-grid{grid-template-columns:1fr 1fr}
+  .form-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- HEADER -->
+  <header class="header">
+    <div class="brand">
+      <div class="brand-mark">CI</div>
+      <div>
+        <div class="brand-text">Continuous Improvement</div>
+        <div class="brand-sub">Trilogy Care — Strengthened Standards</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <span class="header-sync" id="syncStatus">● Live</span>
+      <span class="header-user" id="currentUser">Loading...</span>
+    </div>
+  </header>
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="nav-section">
+      <div class="nav-label">Overview</div>
+      <div class="nav-item active" data-view="dashboard"><span class="icon">📊</span>Dashboard</div>
+      <div class="nav-item" data-view="register"><span class="icon">📋</span>Register<span class="badge" id="navRegCount">0</span></div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Manage</div>
+      <div class="nav-item" data-view="new"><span class="icon">➕</span>New Entry</div>
+      <div class="nav-item" data-view="pending"><span class="icon">⏳</span>Pending Review<span class="badge warn" id="navPendCount">0</span></div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Audit</div>
+      <div class="nav-item" data-view="standards"><span class="icon">🎯</span>Standards Map</div>
+      <div class="nav-item" data-view="evidence"><span class="icon">✅</span>Evidence</div>
+      <div class="nav-item" data-view="log"><span class="icon">📝</span>Activity Log</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Tools</div>
+      <div class="nav-item" data-view="import"><span class="icon">📥</span>Import / Export</div>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main" id="mainContent">
+    <!-- Populated by JS -->
+  </main>
+</div>
+
+<!-- NEW ENTRY MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h2>New CI Entry</h2>
+    <form id="newEntryForm">
+      <div class="form-group">
+        <label>Title <span class="req">*</span></label>
+        <input type="text" id="f_title" required placeholder="Short headline for the improvement">
+      </div>
+      <div class="form-group">
+        <label>Description <span class="req">*</span></label>
+        <textarea id="f_desc" required placeholder="What was identified? What's the issue or opportunity?"></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Standard(s) <span class="req">*</span></label>
+          <select id="f_standard" required multiple size="5">
+            <option value="1.1">1.1 — Person-centred care</option>
+            <option value="1.2">1.2 — Ongoing assessment</option>
+            <option value="1.3">1.3 — Care planning</option>
+            <option value="1.4">1.4 — Delivering services</option>
+            <option value="2.1">2.1 — Governance</option>
+            <option value="2.2">2.2 — Leaders and key personnel</option>
+            <option value="2.3">2.3 — Quality system & policies</option>
+            <option value="2.4">2.4 — Continuous improvement</option>
+            <option value="2.5">2.5 — Risk management</option>
+            <option value="2.6">2.6 — Feedback & complaints</option>
+            <option value="2.7">2.7 — Information management</option>
+            <option value="2.8">2.8 — Workforce capability</option>
+            <option value="2.9">2.9 — Workforce conduct</option>
+            <option value="3.1">3.1 — Assessment & planning</option>
+            <option value="3.2">3.2 — Delivering care</option>
+            <option value="3.3">3.3 — Service environment</option>
+            <option value="3.4">3.4 — Transitions</option>
+            <option value="4.1">4.1 — Safe environment</option>
+            <option value="5.1">5.1 — Clinical governance</option>
+            <option value="5.4">5.4 — Clinical care</option>
+            <option value="5.5">5.5 — Incident management</option>
+            <option value="5.7">5.7 — Minimising restraint</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Source <span class="req">*</span></label>
+          <select id="f_source" required>
+            <option value="">— Select —</option>
+            <option value="Self-Identified">Self-Identified</option>
+            <option value="GAP Assessment">GAP Assessment / Audit</option>
+            <option value="CQCC">CQCC</option>
+            <option value="Consumer Feedback">Consumer Feedback</option>
+            <option value="SIRS">SIRS</option>
+            <option value="Commission Complaint">Commission Complaint</option>
+            <option value="Commission Directive">Commission Directive</option>
+            <option value="Desktop Contact">Desktop Contact</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Owner <span class="req">*</span></label>
+          <select id="f_owner" required>
+            <option value="">— Select —</option>
+            <option value="Celeste">Celeste</option>
+            <option value="Fran">Fran</option>
+            <option value="Erin">Erin</option>
+            <option value="Leslie">Leslie</option>
+            <option value="Ash">Ash</option>
+            <option value="Rafael">Rafael</option>
+            <option value="Brad">Brad</option>
+            <option value="Sian">Sian</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Department <span class="req">*</span></label>
+          <select id="f_dept" required>
+            <option value="">— Select —</option>
+            <option value="Operations">Operations</option>
+            <option value="Clinical">Clinical</option>
+            <option value="Quality">Quality</option>
+            <option value="Digital">Digital</option>
+            <option value="Finance">Finance</option>
+            <option value="HR">HR / L&D</option>
+            <option value="Care Management">Care Management</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Date Identified <span class="req">*</span></label>
+          <input type="date" id="f_dateId" required>
+        </div>
+        <div class="form-group">
+          <label>Target Completion Date <span class="req">*</span></label>
+          <input type="date" id="f_targetDate" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Evidence Links</label>
+        <input type="text" id="f_evidence" placeholder="Linear issue URL, Confluence page, etc.">
+      </div>
+      <div class="form-group">
+        <label>Source Reference</label>
+        <input type="text" id="f_sourceRef" placeholder="Complaint ID, email ref, CRM ID...">
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="btn-primary">Submit for Review</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// CI TOOL — PERSISTENT MEMORY LAYER
+// All data persisted to localStorage + API sync when available
+// ============================================================
+
+const STORAGE_KEY = 'tc.ci.register.v1';
+const LOG_KEY = 'tc.ci.activitylog.v1';
+const API_ENDPOINT = 'https://operations.trilogycare.com.au/api/public/aect-ci';
+
+// --- DATA LAYER ---
+function loadRegister() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch(e) { return []; }
+}
+function saveRegister(items) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+  updateNav();
+}
+function loadLog() {
+  try { return JSON.parse(localStorage.getItem(LOG_KEY) || '[]'); } catch(e) { return []; }
+}
+function saveLog(entries) {
+  localStorage.setItem(LOG_KEY, JSON.stringify(entries));
+}
+function addLogEntry(action, detail) {
+  const log = loadLog();
+  log.unshift({ ts: new Date().toISOString(), user: getCurrentUser(), action, detail });
+  if (log.length > 500) log.length = 500;
+  saveLog(log);
+}
+function getCurrentUser() { return 'Rafael'; }
+function generateId() {
+  const items = loadRegister();
+  const num = items.length + 1;
+  return 'TC-CI-' + String(num).padStart(4, '0');
+}
+
+// --- SEED DATA (Linear items from AECT — what we have now) ---
+const SEED_DATA = [
+  {id:"TC-CI-0001",title:"Consumer Mobile App V1",desc:"Building mobile app for clients to access care plans, budgets, and services directly",standards:["1.3","1.4"],source:"Self-Identified",status:"In Progress",owner:"Vishal Asai",dept:"Digital",dateIdentified:"2026-02-01",targetDate:"2026-06-30",evidence:"https://linear.app/trilogycare/project/mob1-consumer-mobile-v1",sourceRef:"MOB1",resolution:"",createdAt:"2026-02-01T00:00:00Z",updatedAt:"2026-02-01T00:00:00Z"},
+  {id:"TC-CI-0002",title:"Home Care Agreement Digital Workflow",desc:"Digitising the HCA process — draft, send, sign, terminate — ensuring transparent agreements",standards:["1.4"],source:"Self-Identified",status:"In Progress",owner:"Design + DUC",dept:"Digital",dateIdentified:"2026-03-01",targetDate:"2026-06-30",evidence:"https://linear.app/trilogycare/project/hca-client-hca",sourceRef:"DES-398",resolution:"",createdAt:"2026-03-01T00:00:00Z",updatedAt:"2026-03-01T00:00:00Z"},
+  {id:"TC-CI-0003",title:"Care Partner Check-Ins System",desc:"Systematic check-in module for care partners to assess client wellbeing with structured QoL data",standards:["1.1","1.3","3.1","3.2","5.4"],source:"Self-Identified",status:"In Progress",owner:"Tim Maier",dept:"Digital",dateIdentified:"2026-03-01",targetDate:"2026-05-30",evidence:"https://linear.app/trilogycare/project/chk-care-partner-check-ins",sourceRef:"CHK",resolution:"",createdAt:"2026-03-01T00:00:00Z",updatedAt:"2026-03-01T00:00:00Z"},
+  {id:"TC-CI-0004",title:"Commission Complaints Process Re-Engineering",desc:"Complete re-engineering of ACQSC Commission complaints handling — process mapping, historical analysis, response templates",standards:["2.3","2.5","2.6"],source:"Commission Complaint",status:"In Progress",owner:"Leslie Nelson",dept:"Operations",dateIdentified:"2026-02-01",targetDate:"2026-05-30",evidence:"https://linear.app/trilogycare/project/commission-complaints-process-re-engineering",sourceRef:"OPE-47, OPE-48, OPE-112",resolution:"",createdAt:"2026-02-01T00:00:00Z",updatedAt:"2026-04-01T00:00:00Z"},
+  {id:"TC-CI-0005",title:"NDIS Compliance Banning List Monitoring",desc:"Automated upload, ABN matching, and monitoring of NDIS Commission banning orders against supplier network",standards:["2.9"],source:"Self-Identified",status:"Implemented",owner:"Nate Nguyen",dept:"Digital",dateIdentified:"2026-03-01",targetDate:"2026-03-30",evidence:"https://linear.app/trilogycare/issue/TMC-81",sourceRef:"TMC-81",resolution:"Released to production — automated daily banning list check",createdAt:"2026-03-01T00:00:00Z",updatedAt:"2026-03-30T00:00:00Z"},
+  {id:"TC-CI-0006",title:"Supplier Onboarding V2",desc:"Complete overhaul of supplier onboarding — compliance documents, police checks, qualification verification, pricing approval",standards:["2.8","2.9"],source:"GAP Assessment",status:"In Progress",owner:"Rudy Chartier",dept:"Digital",dateIdentified:"2025-12-01",targetDate:"2026-06-30",evidence:"",sourceRef:"SPO project",resolution:"",createdAt:"2025-12-01T00:00:00Z",updatedAt:"2026-03-01T00:00:00Z"},
+  {id:"TC-CI-0007",title:"CI Register Reactivation",desc:"Reviewed and reactivated the Continuous Improvement Register as part of Commission complaints re-engineering",standards:["2.3","2.4"],source:"Self-Identified",status:"Implemented",owner:"Leslie Nelson",dept:"Operations",dateIdentified:"2026-03-01",targetDate:"2026-03-30",evidence:"https://linear.app/trilogycare/issue/OPE-112",sourceRef:"OPE-112",resolution:"Register reactivated in Zoho CRM, items being mapped to standards",createdAt:"2026-03-01T00:00:00Z",updatedAt:"2026-03-30T00:00:00Z"},
+  {id:"TC-CI-0008",title:"Incident Management Module",desc:"Discovery and requirements for building incident management into the platform — clinical governance alignment",standards:["2.5","5.5"],source:"GAP Assessment",status:"In Progress",owner:"Will Whitelaw",dept:"Digital",dateIdentified:"2026-02-01",targetDate:"2026-06-30",evidence:"https://linear.app/trilogycare/project/icm-incident-management",sourceRef:"PLA-1316",resolution:"",createdAt:"2026-02-01T00:00:00Z",updatedAt:"2026-03-01T00:00:00Z"},
+  {id:"TC-CI-0009",title:"Intercom Customer Support Platform",desc:"AI-powered customer support with knowledge base, routing, analytics — replacing manual email-based support",standards:["2.6","2.7"],source:"Self-Identified",status:"Implemented",owner:"Planning",dept:"Digital",dateIdentified:"2026-03-01",targetDate:"2026-03-30",evidence:"https://linear.app/trilogycare/project/itc-intercom",sourceRef:"ITC",resolution:"Intercom live with AI bot, knowledge base, and routing",createdAt:"2026-03-01T00:00:00Z",updatedAt:"2026-03-30T00:00:00Z"},
+  {id:"TC-CI-0010",title:"AECT Audit Preparation Tooling",desc:"AI-powered AECT Policy Mapper with gap analysis, verified evidence mapping, workshop action tracking",standards:["2.3","2.4"],source:"Self-Identified",status:"Implemented",owner:"Ash Williams",dept:"Digital",dateIdentified:"2026-03-01",targetDate:"2026-04-30",evidence:"https://trilogy-care.github.io/aect-audit-tool/",sourceRef:"aect-audit-tool repo",resolution:"Deployed to GitHub Pages with full gap analysis, standards mapping, and evidence verification",createdAt:"2026-03-01T00:00:00Z",updatedAt:"2026-04-17T00:00:00Z"},
+  {id:"TC-CI-0011",title:"L&D Ongoing Training Program Realignment",desc:"Redirecting L&D focus from onboarding-only to ongoing competency gap closure. Five-week training program review.",standards:["2.8","2.9"],source:"Self-Identified",status:"In Progress",owner:"Celeste",dept:"HR",dateIdentified:"2026-04-01",targetDate:"2026-06-30",evidence:"",sourceRef:"Workshop 3 discussion",resolution:"",createdAt:"2026-04-01T00:00:00Z",updatedAt:"2026-04-01T00:00:00Z"},
+  {id:"TC-CI-0012",title:"Fortnightly Management Meetings — Risk Forum",desc:"Established fortnightly management meetings as strategic risk forum covering org-level risks, client recontracting, staff competency updates",standards:["2.1","2.3","2.7"],source:"Self-Identified",status:"Implemented",owner:"Celeste",dept:"Operations",dateIdentified:"2026-04-01",targetDate:"2026-04-15",evidence:"Meeting minutes, Fireflies transcripts",sourceRef:"",resolution:"Meetings established with Sophie and Megs covering",createdAt:"2026-04-01T00:00:00Z",updatedAt:"2026-04-15T00:00:00Z"},
+];
+
+// --- INIT ---
+function initData() {
+  const existing = loadRegister();
+  if (existing.length === 0) {
+    saveRegister(SEED_DATA);
+    addLogEntry('system', 'Register initialized with 12 seed items from Linear/AECT');
+  }
+}
+
+// --- VIEWS ---
+function renderDashboard() {
+  const items = loadRegister();
+  const total = items.length;
+  const implemented = items.filter(i => i.status === 'Implemented').length;
+  const inProg = items.filter(i => i.status === 'In Progress').length;
+  const pending = items.filter(i => i.status === 'Pending Review').length;
+  const withEvidence = items.filter(i => i.evidence && i.evidence.trim()).length;
+  const mapped = items.filter(i => i.standards && i.standards.length > 0).length;
+
+  const stdCounts = {};
+  items.forEach(i => { (i.standards||[]).forEach(s => { const n = s.split('.')[0]; stdCounts[n] = (stdCounts[n]||0)+1; }); });
+
+  return `
+    <div class="page-header">
+      <div class="page-title">Dashboard</div>
+      <div class="page-desc">Continuous Improvement at a glance — ACQSC Registration Renewal 28 June 2026</div>
+    </div>
+    <div class="kpi-grid">
+      <div class="kpi-card accent"><div class="label">Total CI Items</div><div class="value">${total}</div><div class="sub">Since Jan 2025</div></div>
+      <div class="kpi-card" style="border-top:3px solid #10B981"><div class="label">Implemented</div><div class="value">${implemented}</div><div class="sub">${total?Math.round(implemented/total*100):0}% complete</div></div>
+      <div class="kpi-card" style="border-top:3px solid var(--blue)"><div class="label">In Progress</div><div class="value">${inProg}</div><div class="sub">Active work</div></div>
+      <div class="kpi-card warn"><div class="label">Pending Review</div><div class="value">${pending}</div><div class="sub">Awaiting gatekeeper</div></div>
+      <div class="kpi-card"><div class="label">With Evidence</div><div class="value">${withEvidence}/${total}</div><div class="sub">${total?Math.round(withEvidence/total*100):0}% linked</div></div>
+      <div class="kpi-card"><div class="label">Mapped to Standards</div><div class="value">${mapped}/${total}</div><div class="sub">${total?Math.round(mapped/total*100):0}%</div></div>
+    </div>
+    <div class="table-wrap">
+      <div style="padding:20px;font-size:.85rem;font-weight:600;color:var(--navy-dark)">Coverage by Standard</div>
+      <div style="padding:0 20px 20px;display:flex;gap:12px;flex-wrap:wrap">
+        ${[1,2,3,4,5].map(s => `<div style="flex:1;min-width:100px;background:var(--gray-50);border-radius:var(--radius);padding:14px;text-align:center;border:1px solid var(--gray-200)">
+          <div style="font-size:.7rem;color:var(--gray-500);font-weight:600">STD ${s}</div>
+          <div style="font-size:1.4rem;font-weight:700;color:var(--navy-dark);margin-top:4px">${stdCounts[s]||0}</div>
+          <div style="font-size:.7rem;color:var(--gray-400)">items</div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+}
+
+function renderRegister() {
+  const items = loadRegister();
+  const rows = items.map(i => `<tr>
+    <td><strong style="color:var(--navy)">${i.id}</strong></td>
+    <td><strong>${i.title}</strong><br><span style="font-size:.78rem;color:var(--gray-500)">${(i.desc||'').substring(0,80)}${i.desc&&i.desc.length>80?'...':''}</span></td>
+    <td>${(i.standards||[]).map(s=>'<span class="std-chip">'+s+'</span>').join(' ')}</td>
+    <td><span class="status-pill ${i.status==='Implemented'?'done':i.status==='In Progress'?'progress':i.status==='Pending Review'?'identified':'closed'}">${i.status}</span></td>
+    <td>${i.owner||'—'}</td>
+    <td style="font-size:.78rem;color:var(--gray-500)">${i.source||'—'}</td>
+  </tr>`).join('');
+
+  return `
+    <div class="page-header">
+      <div class="page-title">CI Register</div>
+      <div class="page-desc">All continuous improvement items — 1 Jan 2025 to present</div>
+    </div>
+    <div class="table-wrap">
+      <div class="table-toolbar">
+        <input type="text" class="search-input" placeholder="Search items..." id="regSearch" oninput="filterRegister()">
+        <button class="filter-btn" data-filter="all" onclick="setFilter('all')">All</button>
+        <button class="filter-btn" data-filter="progress" onclick="setFilter('progress')">In Progress</button>
+        <button class="filter-btn" data-filter="done" onclick="setFilter('done')">Implemented</button>
+        <button class="filter-btn" data-filter="pending" onclick="setFilter('pending')">Pending</button>
+        <button class="btn-primary" onclick="openModal()">+ New Entry</button>
+      </div>
+      <table>
+        <thead><tr><th>Ref</th><th>Initiative</th><th>Standard</th><th>Status</th><th>Owner</th><th>Source</th></tr></thead>
+        <tbody id="regBody">${rows}</tbody>
+      </table>
+    </div>`;
+}
+
+function renderLog() {
+  const log = loadLog();
+  const entries = log.slice(0, 50).map(e => `<div class="log-entry">
+    <div class="log-dot"></div>
+    <div class="log-time">${new Date(e.ts).toLocaleDateString('en-AU',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>
+    <div class="log-text"><strong>${e.user}</strong> — ${e.action}: ${e.detail}</div>
+  </div>`).join('');
+
+  return `
+    <div class="page-header">
+      <div class="page-title">Activity Log</div>
+      <div class="page-desc">Every change recorded — full audit trail</div>
+    </div>
+    <div class="table-wrap" style="max-height:70vh;overflow-y:auto">
+      ${entries || '<div class="empty"><div class="icon">📝</div><p>No activity yet</p></div>'}
+    </div>`;
+}
+
+function renderPending() {
+  const items = loadRegister().filter(i => i.status === 'Pending Review');
+  if (!items.length) return `<div class="page-header"><div class="page-title">Pending Review</div><div class="page-desc">Items awaiting gatekeeper approval</div></div><div class="empty"><div class="icon">✅</div><p>No items pending review</p></div>`;
+
+  const rows = items.map(i => `<tr>
+    <td><strong>${i.id}</strong></td>
+    <td>${i.title}</td>
+    <td>${i.owner}</td>
+    <td><button class="btn-primary" style="padding:4px 12px;font-size:.75rem" onclick="approveItem('${i.id}')">Approve</button></td>
+  </tr>`).join('');
+
+  return `
+    <div class="page-header"><div class="page-title">Pending Review</div><div class="page-desc">Items awaiting gatekeeper approval before entering the register</div></div>
+    <div class="table-wrap"><table><thead><tr><th>Ref</th><th>Title</th><th>Submitted By</th><th>Action</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
+function renderImport() {
+  return `
+    <div class="page-header"><div class="page-title">Import / Export</div><div class="page-desc">Bulk data operations</div></div>
+    <div class="kpi-grid" style="grid-template-columns:1fr 1fr">
+      <div class="kpi-card" style="cursor:pointer" onclick="exportCSV()"><div class="label">Export</div><div class="value" style="font-size:1.2rem">📥 Download CSV</div><div class="sub">Full register export for offline review</div></div>
+      <div class="kpi-card"><div class="label">Import</div><div class="value" style="font-size:1.2rem">📤 Upload CSV</div><div class="sub">Bulk import from CRM export<br><input type="file" id="importFile" accept=".csv" onchange="handleImport(event)" style="margin-top:8px;font-size:.8rem"></div></div>
+    </div>`;
+}
+
+// --- NAVIGATION ---
+let currentView = 'dashboard';
+function navigate(view) {
+  currentView = view;
+  const main = document.getElementById('mainContent');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.view === view));
+
+  if (view === 'dashboard') main.innerHTML = renderDashboard();
+  else if (view === 'register') main.innerHTML = renderRegister();
+  else if (view === 'new') { openModal(); return; }
+  else if (view === 'pending') main.innerHTML = renderPending();
+  else if (view === 'log') main.innerHTML = renderLog();
+  else if (view === 'import') main.innerHTML = renderImport();
+  else if (view === 'standards') main.innerHTML = renderStandards();
+  else if (view === 'evidence') main.innerHTML = renderEvidence();
+  else main.innerHTML = `<div class="empty"><div class="icon">🚧</div><p>Coming soon</p></div>`;
+}
+
+function renderStandards() {
+  const items = loadRegister();
+  const stdNames = {'1':'The Individual','2':'The Organisation','3':'Care & Services','4':'The Environment','5':'Clinical Care'};
+  let html = `<div class="page-header"><div class="page-title">Standards Map</div><div class="page-desc">CI items grouped by Strengthened Aged Care Quality Standard</div></div>`;
+
+  for (let s = 1; s <= 5; s++) {
+    const stdItems = items.filter(i => (i.standards||[]).some(st => st.startsWith(s+'.')));
+    html += `<div class="table-wrap" style="margin-bottom:16px"><div style="padding:16px 20px;font-weight:700;color:var(--navy);border-bottom:1px solid var(--gray-100)">Standard ${s}: ${stdNames[s]} <span style="font-weight:400;color:var(--gray-400);font-size:.82rem">(${stdItems.length} items)</span></div>`;
+    if (stdItems.length) {
+      html += `<table><tbody>${stdItems.map(i=>`<tr><td style="width:100px"><strong>${i.id}</strong></td><td>${i.title}</td><td style="width:120px"><span class="status-pill ${i.status==='Implemented'?'done':'progress'}">${i.status}</span></td></tr>`).join('')}</tbody></table>`;
+    } else {
+      html += `<div style="padding:20px;color:var(--gray-400);font-size:.85rem">No items mapped to this standard yet</div>`;
+    }
+    html += `</div>`;
+  }
+  return html;
+}
+
+function renderEvidence() {
+  const items = loadRegister();
+  const withEv = items.filter(i => i.evidence && i.evidence.trim());
+  const without = items.filter(i => !i.evidence || !i.evidence.trim());
+
+  let html = `<div class="page-header"><div class="page-title">Evidence</div><div class="page-desc">Items with linked evidence (Linear, Confluence, documents)</div></div>`;
+  html += `<div class="kpi-grid" style="margin-bottom:20px"><div class="kpi-card accent"><div class="label">With Evidence</div><div class="value">${withEv.length}</div></div><div class="kpi-card danger"><div class="label">Missing Evidence</div><div class="value">${without.length}</div><div class="sub">Needs attention</div></div></div>`;
+
+  if (without.length) {
+    html += `<div class="table-wrap" style="margin-bottom:16px"><div style="padding:16px 20px;font-weight:700;color:var(--red)">⚠ Missing Evidence</div><table><tbody>${without.map(i=>`<tr><td><strong>${i.id}</strong></td><td>${i.title}</td><td>${i.owner}</td></tr>`).join('')}</tbody></table></div>`;
+  }
+  return html;
+}
+
+// --- ACTIONS ---
+function openModal() {
+  document.getElementById('modalOverlay').classList.add('show');
+  document.getElementById('f_dateId').value = new Date().toISOString().split('T')[0];
+}
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('show');
+  document.getElementById('newEntryForm').reset();
+}
+
+document.getElementById('newEntryForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const items = loadRegister();
+  const newItem = {
+    id: generateId(),
+    title: document.getElementById('f_title').value,
+    desc: document.getElementById('f_desc').value,
+    standards: Array.from(document.getElementById('f_standard').selectedOptions).map(o => o.value),
+    source: document.getElementById('f_source').value,
+    status: 'Pending Review',
+    owner: document.getElementById('f_owner').value,
+    dept: document.getElementById('f_dept').value,
+    dateIdentified: document.getElementById('f_dateId').value,
+    targetDate: document.getElementById('f_targetDate').value,
+    evidence: document.getElementById('f_evidence').value,
+    sourceRef: document.getElementById('f_sourceRef').value,
+    resolution: '',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+  items.push(newItem);
+  saveRegister(items);
+  addLogEntry('created', `New CI item ${newItem.id}: "${newItem.title}"`);
+  closeModal();
+  navigate('register');
+});
+
+function approveItem(id) {
+  const items = loadRegister();
+  const item = items.find(i => i.id === id);
+  if (item) {
+    item.status = 'Identified';
+    item.updatedAt = new Date().toISOString();
+    saveRegister(items);
+    addLogEntry('approved', `${id} "${item.title}" approved into register`);
+    navigate('pending');
+  }
+}
+
+function exportCSV() {
+  const items = loadRegister();
+  const headers = ['id','title','desc','standards','source','status','owner','dept','dateIdentified','targetDate','evidence','sourceRef','resolution'];
+  const csv = [headers.join(','), ...items.map(i => headers.map(h => {
+    let v = h === 'standards' ? (i[h]||[]).join(';') : (i[h]||'');
+    return '"' + String(v).replace(/"/g, '""') + '"';
+  }).join(','))].join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'ci-register-export-' + new Date().toISOString().split('T')[0] + '.csv';
+  a.click();
+  addLogEntry('export', `CSV export — ${items.length} items`);
+}
+
+function updateNav() {
+  const items = loadRegister();
+  document.getElementById('navRegCount').textContent = items.length;
+  document.getElementById('navPendCount').textContent = items.filter(i=>i.status==='Pending Review').length;
+}
+
+// --- INIT ---
+document.querySelectorAll('.nav-item').forEach(n => {
+  n.addEventListener('click', () => navigate(n.dataset.view));
+});
+document.getElementById('modalOverlay').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeModal();
+});
+
+initData();
+updateNav();
+navigate('dashboard');
+document.getElementById('currentUser').textContent = getCurrentUser();
+</script>
+</body>
+</html>
